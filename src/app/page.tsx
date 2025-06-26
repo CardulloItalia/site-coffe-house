@@ -7,12 +7,12 @@ import ShopProduct from "@/components/ShopProduct/shopProduct";
 
 export default function Home() {
   return (
-    <div className=" flex flex-col gap-20 bg-sand">
+    <div className="flex flex-col gap-20 bg-sand">
       <Navbar />
       <MainSection/>
-      <Footer/>
       <TheSayAboutAs/>
       <ShopProduct/>
+      <Footer/>
     </div>
   );
 }
