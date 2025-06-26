@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-hand">
+      <body className="font-hand bg-sand">
         {children}
       </body>
     </html>
