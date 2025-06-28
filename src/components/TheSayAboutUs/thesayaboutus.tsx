@@ -1,55 +1,90 @@
+'use client'
+
+import { useEffect, useState } from "react";
 import { Marquee } from "../magicui/marquee";
+import { Client } from "@/types/clientDB";
+import { getAllProfileClient } from "@/service/fetchDataClient";
+import CardTheSayAboutUs from "./CartClient/cardclient";
 
-const client = [
-    {
-        "name": "Luca",
-        "comment": "Ottimo caffè e ambiente tranquillo, ci torno sempre volentieri!"
-    },
-    {
-        "name": "Giulia",
-        "comment": "Adoro il cappuccino e il personale è super gentile!"
-    },
-    {
-        "name": "Marco",
-        "comment": "Posto perfetto per lavorare in pace e gustare un buon espresso."
-    },
-    {
-        "name": "Francesca",
-        "comment": "Atmosfera accogliente e dolci deliziosi, consigliatissimo!"
-    },
-    {
-        "name": "Alessandro",
-        "comment": "Il miglior caffè della città, semplice e sempre di qualità."
+export default function TheSayAboutUs() {
+
+    const [profileClient, setProfileClient] = useState<Client[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+
+    const loadingClientProfile = async () => {
+        try {
+            setLoading(true)
+            setError(null)
+
+            const data = await getAllProfileClient()
+
+            if (data) {
+                setProfileClient(data)
+            } else {
+                setError("Error loading profile client")
+            }
+        } catch (err) {
+            setError('Error wifi')
+        } finally {
+            setLoading(false)
+        }
     }
-]
-const firstRow = client;
 
 
-export const CardTheSayAboutUs = ({
-    name,
-    comment
-}: {
-    name: string;
-    comment: string;
-}) => {
-    return (
-        <div className="m-3 p-3 border-2 border-black rounded-md  bg-white w-fit">
-            <p>{name}</p>
-            <p>{comment}</p>
-        </div>
-    )
-}
+    useEffect(() => {
+        loadingClientProfile()
+    }, [])
 
 
-export default function TheSayAboutAs() {
+    if (loading) {
+        return (
+            <div className="mt-10 mb-10">
+                <p className="text-center text-2xl text-black">Cosa dicono di noi</p>
+                <div className="text-center mt-4">
+                    <p>Caricamento...</p>
+                </div>
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className="mt-10 mb-10">
+                <p className="text-center text-2xl text-black">Cosa dicono di noi</p>
+                <div className="text-center mt-4 text-red-500">
+                    <p>Errore: {error}</p>
+                    <button 
+                        onClick={loadingClientProfile}
+                        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                        Riprova
+                    </button>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="mt-10 mb-10">
             <p className="text-center text-2xl text-black">Cosa dicono di noi</p>
-            <Marquee pauseOnHover className="[--duration:20s]">
-                {firstRow.map((client) => (
-                    <CardTheSayAboutUs key={client.name} name={client.name} comment={client.comment} />
-                ))}
-            </Marquee>
+            
+            {profileClient.length === 0 ? (
+                <div className="text-center mt-4">
+                    <p>Nessun cliente trovato</p>
+                </div>
+            ) : (
+                <Marquee pauseOnHover className="[--duration:20s]">
+                    {profileClient.map((client, index) => (
+                        <CardTheSayAboutUs 
+                            key={`${client.name}-${index}`} 
+                            name={client.name} 
+                            comment={client.comment} 
+                        />
+                    ))}
+                </Marquee>
+            )}
         </div>
     );
 }
